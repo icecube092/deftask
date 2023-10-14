@@ -27,15 +27,23 @@ func (r *repo) IsExistsSameAddrForUsers(
 ) (bool, error) {
 	const query = `
 SELECT exists (
-	SELECT DISTINCT addr
-	FROM conn_log
-	WHERE user_id = $1
+	SELECT addr FROM (
+		SELECT addr, count(*)
+		FROM conn_log
+		WHERE user_id = $1
+		GROUP BY addr
+		HAVING count(*) > 1
+	) AS q1
 	
-	INTERSECT 
+	INTERSECT
 	
-	SELECT DISTINCT addr
-	FROM conn_log
-	WHERE user_id = $2
+	SELECT addr FROM (
+		SELECT addr, count(*)
+		FROM conn_log
+		WHERE user_id = $2
+		GROUP BY addr
+		HAVING count(*) > 1
+	) AS q2
 )
 `
 
