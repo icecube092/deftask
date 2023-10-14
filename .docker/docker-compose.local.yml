@@ -1,0 +1,20 @@
+version: '3.7'
+networks:
+  def:
+
+services:
+  postgres:
+    container_name: def_db
+    image: postgres:14
+    labels:
+      env: "def"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: be
+      PGDATA: "/data/postgres"
+    ports:
+      - 6432:5432
+    networks:
+      - def
+    restart: unless-stopped
